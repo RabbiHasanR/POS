@@ -1,3 +1,11 @@
+<?php
+//include('DBConnection.php');
+require 'DBConnection.php';
+require 'validation.php';
+
+session_start();
+?>
+
 <!DOCTYPE html>
 <!--[if lt IE 7 ]> <html lang="en" class="no-js ie6 lt8"> <![endif]-->
 <!--[if IE 7 ]>    <html lang="en" class="no-js ie7 lt8"> <![endif]-->
@@ -15,6 +23,22 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>	
     </head>
+	<?php
+	if($_SERVER['REQUEST_METHOD']=='POST'){
+		//if user click signin then its condition true
+		if(isset($_POST['signin'])){
+			//include('login.php');
+			require 'login.php';
+		}
+		//if user click sign up then its condition true
+		elseif(isset($_POST['signup'])){
+			//include('register.php');
+			require 'register.php';
+			//require 'validation.php';
+		}
+	}
+	
+	?>
     <body>
         <div class="container">
            
@@ -23,76 +47,7 @@
 				<h1>POS System</h1>
 				
             </header>
-			<!-- validation -->
-			<?php
-//variable contains regex
-$nameRegex="/^[a-zA-Z ]*$/";
-//contains at least 1 lowercase,1 uppercase alphabetical character,1 numeric character,1 special character,must be 8 character or longer.
-$passwordRegex="/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/";
-//declear variable and set empty value
-$name=$email=$password=$confirmPassword="";
-//declear error messege variable and set empty value
-$nameErr=$emailErr=$passwordErr=$confirmPasswordErr="";
-//condition check if the request is  $_POST then condition true
-if($_SERVER["REQUEST_METHOD"]=="POST"){
-	//name validation for sign up 
-	if(empty($_POST['usernamesignup'])){
-		$nameErr="Name is required";
-	}
-	else{
-		$name=test_input($_POST['usernamesignup']);
-		//check if name only contains letters and whitespace
-		if(!preg_match($nameRegex,$name)){
-			$nameErr="Only Letters and white space allowed";
-		}
-	}
-	//email validation for sing up  
-	if(empty($_POST['emailsignup'])){
-		$emailErr="Email is reuquired";
-	}
-	else{
-		$email=test_input($_POST['emailsignup']);
-		//check if e-mail address is well-formed
-		if(!filter_var($email,FILTER_VALIDATE_EMAIL)){
-			$emailErr="Invalid email format";
-		}
-	}
-	
-	//password validation for sign up
-	if(empty($_POST['passwordsignup'])){
-		$passwordErr="Password is required";
-	}
-	else{
-		$password=test_input($_POST['passwordsignup']);
-		//check if password contains at least 1 lowercase,1 uppercase alphabetical character,1 numeric character,1 special character,must be 8 character or longer.
-		if(!preg_match($passwordRegex,$password)){
-			$passwordErr="password contains at least 1 lowercase,1 uppercase alphabetical character,1 numeric character,1 special character,must be 8 character or longer.";
-		}
-	}
-	
-	//confirm password validation for sign up 
-	if(empty($_POST['passwordsignup_confirm'])){
-		$confirmPasswordErr="Confirm password is required";
-	}
-	else{
-		//check confirm password match password 
-		if($_POST['passwordsignup']==$_POST['passwordsignup_confirm']){
-			$confirmPassword=test_input($_POST['passwordsignup_confirm']);
-		}
-		else{
-			$confirmPasswordErr="Password not match";
-		}
 			
-	}
-}
-//test input functon
-function test_input($data){
-	$data=trim($data);
-	$data=stripslashes($data);
-	$data=htmlspecialchars($data);
-	return $data;
-}
-?>
             <section>				
                 <div id="container_demo" >
                     <!-- hidden anchor to stop jump http://www.css3create.com/Astuce-Empecher-le-scroll-avec-l-utilisation-de-target#wrap4  -->
@@ -100,11 +55,11 @@ function test_input($data){
                     <a class="hiddenanchor" id="tologin"></a>
                     <div id="wrapper">
                         <div id="login" class="animate form">
-                            <form  action="mysuperscript.php" autocomplete="on" class="post"> 
+                            <form  action="" autocomplete="on" method="post"> 
                                 <h1>Log in</h1> 
                                 <p> 
                                     <label for="username" class="uname" > Your email </label>
-                                    <input id="username" name="username" required="required" type="text" placeholder="yourmail@mail.com"/>
+                                    <input id="useremail" name="useremail" required="required" type="text" placeholder="yourmail@mail.com"/>
                                 </p>
                                 <p> 
                                     <label for="password" class="youpasswd"> Your password </label>
@@ -116,7 +71,7 @@ function test_input($data){
 								</p>
                                 <p class="login button"> 
                                    <!--<a href="http://cookingfoodsworld.blogspot.in/" target="_blank" ></a>-->
-								    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+								    <button class="btn btn-lg btn-primary btn-block" type="submit" name="signin">Sign in</button>
 								</p>
 								<p>
 								   <label for="fogetpassword"><a href="#">Forget Password?</a></label>
@@ -153,7 +108,7 @@ function test_input($data){
                                 </p>
 								
                                 <p class="signin button"> 
-									<input type="submit" name="submit" value="Sign up"/> 
+									<input type="submit" name="signup" value="Sign up"/> 
 								</p>
                                 <p class="change_link">  
 									Already a member ?
@@ -166,24 +121,6 @@ function test_input($data){
                 </div>  
             </section>
         </div>
-		<!-- register information save database
-		<?php
-           include('DBConnection.php');
-		   
-             if(isset($_POST['submit']))
-             {
-			 //if($_POST['usernamesignup']!="" && $_POST['usernamesignup']==$nameRegex && $_POST['emailsignup']!="" && filter_var($email,FILTER_VALIDATE_EMAIL) && $_POST['passwordsignup']!="" && $_POST['passwordsignup']==$passwordRegex && $_POST['passwordsignup']==$_POST['passwordsignup_confirm']){
-               $name=mysqli_real_escape_string($conn, $_POST['usernamesignup']);
-               $email=mysqli_real_escape_string($conn, $_POST['emailsignup']);
-               $password=mysqli_real_escape_string($conn, $_POST['passwordsignup']);
-               $query1=mysqli_query($conn,"insert into MyGuests values('','$name','$email','$password')");
-			   
-             if($query1)
-              {
-               header("location:LoginPage.php");
-              }
-              //}
-		   }
-          ?>
+		
     </body>
 </html>

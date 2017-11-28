@@ -31,4 +31,16 @@ if(mysqli_query($conn,$sql)){
 }else{
 	echo "Error creating table: " .mysqli_error($conn);
 }*/
+
+//alter table and add new colum
+/*$sql="ALTER TABLE MyGuests 
+ADD hash VARCHAR(50) NOT NULL ,
+ADD active BOOL NOT NULL DEFAULT 0";
+//rename table
+//$sql="RENAME TABLE MyGuests to users";
+if(mysqli_query($conn,$sql)){
+	echo "Alter table successfully";
+}else{
+	echo "Error Alter table: " .mysqli_error($conn);
+}*/
 ?>
